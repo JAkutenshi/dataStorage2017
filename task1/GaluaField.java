@@ -53,21 +53,56 @@ public class GaluaField {
         return GFModF(result);
     }
 
-    public static Polynom GWPow(Polynom inPolynom, int power) {
-        for (int i = 0; i < power; i++) {
-            inPolynom = GFMulX(inPolynom);
-        }
-        return inPolynom;
+    private static ArrayList<Polynom> computeClosure(Polynom polynom) {
+        ArrayList<Polynom> closure = new ArrayList<>();
+        closure.add(new Polynom(1)); // 0
+        closure.add(polynom);           // 1
+
+        Polynom currentPolynom = polynom;
+        do {
+            currentPolynom = GFMul(currentPolynom, polynom);
+            if (currentPolynom.getIntRepr() == 1) {
+                break;
+            }
+            closure.add(currentPolynom);
+        } while (true);
+
+        // printClosure(closure);
+
+        return closure;
     }
 
-    public static Polynom GFLog(Polynom inPolynom, int base) {
+    private static void printClosure(ArrayList<Polynom> closure) {
+        System.out.println("For " + closure.get(0) + " power = " + closure.size() + " result:");
+        for (int i = 0; i < closure.size(); i++) {
+            System.out.println(i + ": " + closure.get(i).toString());
+        }
+    }
 
-        return null;
+    public static Polynom GFPow(Polynom inPolynom, int power) {
+
+        ArrayList<Polynom> closure = computeClosure(inPolynom);
+
+        int resultIndex = power % (closure.size());
+        if (resultIndex < 0) {
+            resultIndex = closure.size() + resultIndex;
+        }
+
+        return closure.get(resultIndex);
+    }
+
+    public static int GFLog(Polynom inPolynom, Polynom base) {
+        ArrayList<Polynom> closure = computeClosure(inPolynom);
+        for (int i = 0; i < closure.size(); i++) {
+            if (closure.get(i).getIntRepr() == base.getIntRepr())
+                return i;
+        }
+
+        return -1;
     }
 
     public static Polynom GFInv(Polynom inPolynom) {
-
-        return null;
+        return GFPow(inPolynom, -1);
     }
 
     public static ArrayList<Polynom> getAllPrimitivePolynomes() {
