@@ -1,0 +1,14 @@
+*.backup
+*.aux
+*.bbl
+*.bcf
+*.out
+*.log
+*.blg
+*.run.xml
+*.synctex.gz
+*.toc
+*.class
+*.iml
+*.ipr
+*.iws
