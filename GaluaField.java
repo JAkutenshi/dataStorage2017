@@ -8,8 +8,9 @@ public class GaluaField {
     private final static int PRIMITIVE_POLYNOM = 0x11d;
     private final static Polynom primitivePolunom = new Polynom(PRIMITIVE_POLYNOM);
     private final static int primitivePolynomValuableIndex = primitivePolunom.findValuebaleIndex();
+    private final static Polynom GF_X = new Polynom(2);
 
-    private static Polynom GFSum(Polynom inFirstPolynom, Polynom inSecondPolynom) {
+    public static Polynom GFSum(Polynom inFirstPolynom, Polynom inSecondPolynom) {
         int result = inFirstPolynom.getIntRepr() ^ inSecondPolynom.getIntRepr();
         /*System.out.println(
                 Integer.toBinaryString(inFirstPolynom.getIntRepr()) + " + \n" +
@@ -27,6 +28,19 @@ public class GaluaField {
         return result;
     }
 
+    public static Polynom GFPowX(int power) {
+        /*Polynom result = GF_X;
+        if (power == 0)
+            return new Polynom(1);
+        else if (power == 1)
+            return result;
+
+        for (int i = 2; i <= power; i++) {
+            result = GFMulX(result);
+        }*/
+        return GFPow(GF_X, power);
+    }
+
     private static Polynom GFModF(Polynom inPolynom) {
         /*System.out.println(
                 Integer.toBinaryString(inPolynom.getIntRepr()) + " div " +
@@ -42,6 +56,9 @@ public class GaluaField {
     }
 
     public static Polynom GFMul(Polynom inFirstPolynom, Polynom inSecondPolynom) {
+        if (inFirstPolynom.getIntRepr() == 0 || inSecondPolynom.getIntRepr() == 0) {
+            return new Polynom(0);
+        }
         Polynom result = new Polynom();
         int base = Polynom.BASE;
         for (int i= 0; i < base; i++) {
@@ -72,13 +89,6 @@ public class GaluaField {
         return closure;
     }
 
-    private static void printClosure(ArrayList<Polynom> closure) {
-        System.out.println("For " + closure.get(0) + " power = " + closure.size() + " result:");
-        for (int i = 0; i < closure.size(); i++) {
-            System.out.println(i + ": " + closure.get(i).toString());
-        }
-    }
-
     public static Polynom GFPow(Polynom inPolynom, int power) {
 
         ArrayList<Polynom> closure = computeClosure(inPolynom);
@@ -92,9 +102,9 @@ public class GaluaField {
     }
 
     public static int GFLog(Polynom inPolynom, Polynom base) {
-        ArrayList<Polynom> closure = computeClosure(inPolynom);
+        ArrayList<Polynom> closure = computeClosure(base);
         for (int i = 0; i < closure.size(); i++) {
-            if (closure.get(i).getIntRepr() == base.getIntRepr())
+            if (closure.get(i).getIntRepr() == inPolynom.getIntRepr())
                 return i;
         }
 
@@ -105,8 +115,10 @@ public class GaluaField {
         return GFPow(inPolynom, -1);
     }
 
-    public static ArrayList<Polynom> getAllPrimitivePolynomes() {
-
-        return null;
+    public static Polynom GFDiv(Polynom a, Polynom b) {
+        return GFMul(a, GFInv(b));
     }
+
+
+
 }
